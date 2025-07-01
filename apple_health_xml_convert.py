@@ -7,8 +7,8 @@ Simple Apple Health XML to CSV
 :Description: Convert Apple Health "export.xml" file into a csv
 :Version: 0.0.2
 :Created: 2019-10-04
-:Updated: 2023-10-29
-:Authors: Jason Meno (jam)
+:Updated: 2025-07-01
+:Authors: Jason Meno (jam), Luke Wagner
 :Dependencies: An export.xml file from Apple Health
 :License: BSD-2-Clause
 """
@@ -122,12 +122,12 @@ def xml_to_csv(file_path):
     return health_df
 
 
-def save_to_csv(health_df):
+def save_to_csv(df, filename_prefix):
     print("Saving CSV file...", end="")
     sys.stdout.flush()
 
     today = dt.datetime.now().strftime('%Y-%m-%d')
-    health_df.to_csv("apple_health_export_" + today + ".csv", index=False)
+    df.to_csv(filename_prefix + "_" + today + ".csv", index=False)
     print("done!")
 
     return
@@ -143,7 +143,9 @@ def main():
     file_path = "export.xml"
     temp_file_path = preprocess_to_temp_file(file_path)
     health_df = xml_to_csv(temp_file_path)
-    save_to_csv(health_df)
+    save_to_csv(health_df, "apple_health_export")
+    biometrics_df = health_df[health_df["sourceName"] == "RENPHO Health"]
+    save_to_csv(biometrics_df, "biometrics_export")
     remove_temp_file(temp_file_path)
 
     return
