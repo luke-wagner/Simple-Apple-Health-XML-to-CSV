@@ -122,6 +122,27 @@ def xml_to_csv(file_path):
     return health_df
 
 
+def extract_biometrics_data(df):
+    """
+    Given a dataframe of the complete health data, extract only the biometrics data and return 
+    this as a new dataframe
+
+    Want to get a listing of all metrics recorded by smart scale, then get a complete history
+    for all of these metrics. Essentially, "Get all entries where type in 
+    (get distinct type where source == RENPHO smart scale)"
+    """
+    # Step 1: Get the distinct type values where sourceName == "RENPHO Health"
+    types_to_keep = df.loc[df["sourceName"] == "RENPHO Health", "type"].unique()
+
+    # Step 2: Filter the DataFrame to rows where type is in types_to_keep
+    filtered_df = df[df["type"].isin(types_to_keep)]
+
+    # Order by type then date
+    filtered_df = filtered_df.sort_values(by=["type", "creationDate"], ascending=[True, False])
+
+    return filtered_df
+
+
 def save_to_csv(df, filename_prefix):
     print("Saving CSV file...", end="")
     sys.stdout.flush()
@@ -144,7 +165,7 @@ def main():
     temp_file_path = preprocess_to_temp_file(file_path)
     health_df = xml_to_csv(temp_file_path)
     save_to_csv(health_df, "apple_health_export")
-    biometrics_df = health_df[health_df["sourceName"] == "RENPHO Health"]
+    biometrics_df = extract_biometrics_data(health_df)
     save_to_csv(biometrics_df, "biometrics_export")
     remove_temp_file(temp_file_path)
 
