@@ -2,7 +2,7 @@
 
 A simple script to convert Apple Health's export.xml file to an easy to use csv.
 
-
+Forked version of [jameno's project](https://github.com/jameno/Simple-Apple-Health-XML-to-CSV). Separates biometrics information collected by RENPHO smart scale and exports to a separate file for more manageable data browsing.
 
 ## How to Run 
 
